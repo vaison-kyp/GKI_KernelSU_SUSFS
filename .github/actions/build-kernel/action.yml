@@ -42,6 +42,7 @@ runs:
         tools/bazel build \
           --config=fast \
           --config=stamp \
+          --action_env="KBUILD_BUILD_TIMESTAMP=Fri Jul 10 21:44:24 UTC 2026" \
           --disk_cache=/home/runner/.cache/bazel \
           //common:kernel_aarch64/Image
       fi
