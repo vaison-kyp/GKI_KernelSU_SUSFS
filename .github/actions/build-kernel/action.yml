@@ -45,14 +45,24 @@ runs:
         echo "Patched kernel build timestamp:"
         grep 'KBUILD_BUILD_TIMESTAMP=' build/_setup_env.sh
 
+        if [ -n "${KBUILD_BUILD_TIMESTAMP:-}" ] &&
+           [ -f "build/_setup_env.sh" ]; then
+
+          echo "Forcing Kleaf timestamp to:"
+          echo "$KBUILD_BUILD_TIMESTAMP"
+
+          sed -i \
+            "s|export KBUILD_BUILD_TIMESTAMP=.*|export KBUILD_BUILD_TIMESTAMP=\"${KBUILD_BUILD_TIMESTAMP}\"|" \
+            build/_setup_env.sh
+
+          grep 'KBUILD_BUILD_TIMESTAMP=' build/_setup_env.sh
+        fi
+
         tools/bazel build \
           --config=fast \
           --config=stamp \
           --disk_cache=/home/runner/.cache/bazel \
           //common:kernel_aarch64/Image
-
-        echo "Embedded kernel version:"
-        strings bazel-bin/common/kernel_aarch64/Image | grep -m1 'Linux version' || true
       fi
 
   - name: 'Gather Build Artifacts'

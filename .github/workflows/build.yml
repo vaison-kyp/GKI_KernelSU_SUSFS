@@ -67,6 +67,10 @@ on:
         required: false
         type: boolean
         default: false
+      build_timestamp:
+        required: false
+        type: string
+        default: auto
 
 jobs:
   build-gki:
@@ -121,23 +125,47 @@ jobs:
         kernel_version: ${{ inputs.kernel_version }}
         os_patch_level: ${{ inputs.os_patch_level }}
 
-    - name: Set Build Timestamp from Kernel Commit
+    - name: Set Build Timestamp
       shell: bash
       run: |
-        set -x
-        # Hardcode the build timestamp to the 5th day of the patch level
-        # at 04:20 UTC, using the existing timestamp formats expected by the build.
-        OS_PATCH_LEVEL_INPUT="${{ inputs.os_patch_level }}"
-        if [[ "$OS_PATCH_LEVEL_INPUT" == lts* ]]; then
-          if [[ "$OS_PATCH_LEVEL_INPUT" =~ ^lts-([0-9]{2})$ ]]; then
-            OS_PATCH_LEVEL_YM="$(date -u +%Y)-${BASH_REMATCH[1]}"
-          else
-            OS_PATCH_LEVEL_YM="$(date -u +%Y-%m)"
-          fi
+        set -euo pipefail
+
+        REQUESTED_TIMESTAMP="${{ inputs.build_timestamp }}"
+
+        if [ -n "$REQUESTED_TIMESTAMP" ] && [ "$REQUESTED_TIMESTAMP" != "auto" ]; then
+          FIXED_BUILD_DATE="$REQUESTED_TIMESTAMP"
+          echo "Using custom build timestamp: $FIXED_BUILD_DATE"
         else
-          OS_PATCH_LEVEL_YM="$OS_PATCH_LEVEL_INPUT"
+          OS_PATCH_LEVEL_INPUT="${{ inputs.os_patch_level }}"
+
+          if [[ "$OS_PATCH_LEVEL_INPUT" == lts* ]]; then
+            if [[ "$OS_PATCH_LEVEL_INPUT" =~ ^lts-([0-9]{2})$ ]]; then
+              OS_PATCH_LEVEL_YM="$(date -u +%Y)-${BASH_REMATCH[1]}"
+            else
+              OS_PATCH_LEVEL_YM="$(date -u +%Y-%m)"
+            fi
+          else
+            OS_PATCH_LEVEL_YM="$OS_PATCH_LEVEL_INPUT"
+          fi
+
+          FIXED_BUILD_DATE="${OS_PATCH_LEVEL_YM}-05 04:20:00 UTC"
+          echo "Using automatic build timestamp: $FIXED_BUILD_DATE"
         fi
-        FIXED_BUILD_DATE="${OS_PATCH_LEVEL_YM}-05 04:20:00 UTC"
+
+        SOURCE_DATE_EPOCH=$(date -u -d "$FIXED_BUILD_DATE" +%s)
+        KBUILD_TS=$(date -u -d "@${SOURCE_DATE_EPOCH}" \
+          '+%a %b %d %H:%M:%S UTC %Y')
+
+        echo "SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH" >> "$GITHUB_ENV"
+        echo "KBUILD_BUILD_TIMESTAMP=$KBUILD_TS" >> "$GITHUB_ENV"
+
+        GIT_DATE=$(date -u -d "@${SOURCE_DATE_EPOCH}" \
+          '+%Y-%m-%dT%H:%M:%SZ')
+
+        echo "GIT_COMMITTER_DATE=$GIT_DATE" >> "$GITHUB_ENV"
+        echo "GIT_AUTHOR_DATE=$GIT_DATE" >> "$GITHUB_ENV"
+
+        echo "Final KBUILD_BUILD_TIMESTAMP: $KBUILD_TS"
         SOURCE_DATE_EPOCH=$(date -u -d "$FIXED_BUILD_DATE" +%s)
         echo "SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH" >> $GITHUB_ENV
         KBUILD_TS=$(date -u -d @${SOURCE_DATE_EPOCH} '+%a %b %d %H:%M:%S UTC %Y')

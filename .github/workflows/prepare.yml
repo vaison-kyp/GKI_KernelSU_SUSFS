@@ -71,6 +71,11 @@ on:
         required: false
         type: string
         default: ""
+      build_timestamp:
+        description: "Kernel build timestamp, or auto"
+        required: false
+        type: string
+        default: auto
 
 jobs:
   generate-matrix:
@@ -175,4 +180,5 @@ jobs:
       droidspaces_commit: ${{ inputs.droidspaces_commit }}
       brand_name: ${{ inputs.brand_name }}
       bypass: ${{ inputs.bypass }}
+      build_timestamp: ${{ inputs.build_timestamp }}
     secrets: inherit
