@@ -88,7 +88,7 @@ jobs:
 
     - name: Free Disk Space
       if: true
-      uses: endersonmenezes/free-disk-space@v4  # Use @main for latest, @v3 for stable
+      uses: endersonmenezes/free-disk-space@v4
       with:
         remove_android: true
         remove_dotnet: true
@@ -98,8 +98,8 @@ jobs:
         remove_packages: "azure-cli google-cloud-cli microsoft-edge-stable google-chrome-stable firefox postgresql* temurin-* *llvm* mysql* dotnet-sdk-*"
         remove_packages_one_command: true
         remove_folders: "/usr/share/swift /usr/share/miniconda /usr/share/az* /usr/local/lib/node_modules /usr/local/share/chromium /usr/local/share/powershell /usr/local/julia /usr/local/aws-cli /usr/local/aws-sam-cli /usr/share/gradle"
-        rm_cmd: "rmz"  # Use 'rmz' for faster deletion (default: 'rm')
-        rmz_version: "3.2.0"  # Required when rm_cmd is 'rmz'
+        rm_cmd: "rmz"
+        rmz_version: "3.2.0"
         testing: false
 
     - name: Setup more Swap (for LTO)
@@ -166,15 +166,6 @@ jobs:
         echo "GIT_AUTHOR_DATE=$GIT_DATE" >> "$GITHUB_ENV"
 
         echo "Final KBUILD_BUILD_TIMESTAMP: $KBUILD_TS"
-        SOURCE_DATE_EPOCH=$(date -u -d "$FIXED_BUILD_DATE" +%s)
-        echo "SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH" >> $GITHUB_ENV
-        KBUILD_TS=$(date -u -d @${SOURCE_DATE_EPOCH} '+%a %b %d %H:%M:%S UTC %Y')
-        echo "KBUILD_BUILD_TIMESTAMP=${KBUILD_TS}" >> $GITHUB_ENV
-        # Keep git metadata aligned with the same fixed timestamp.
-        GIT_DATE=$(date -u -d @${SOURCE_DATE_EPOCH} '+%Y-%m-%dT%H:%M:%SZ')
-        echo "GIT_COMMITTER_DATE=${GIT_DATE}" >> $GITHUB_ENV
-        echo "GIT_AUTHOR_DATE=${GIT_DATE}" >> $GITHUB_ENV
-        echo "Build timestamp set to: $(date -u -d @${SOURCE_DATE_EPOCH} '+%Y-%m-%d %H:%M:%S UTC') (epoch: $SOURCE_DATE_EPOCH)"
 
     - name: Extract Sublevel and Set File Name
       id: extract

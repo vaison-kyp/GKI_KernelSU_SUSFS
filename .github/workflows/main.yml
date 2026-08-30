@@ -630,6 +630,7 @@ jobs:
       anykernel3_commit: ${{ needs.resolve-sources.outputs.anykernel3_commit }}
       droidspaces_commit: ${{ needs.resolve-sources.outputs.droidspaces_commit }}
       brand_name: ${{ inputs.brand_name }}
+      build_timestamp: ${{ inputs.build_timestamp }}
       os_patch_level: ${{ inputs.os_patch_level }}
       bypass: ${{ inputs.bypass }}
     secrets: inherit
@@ -659,6 +660,7 @@ jobs:
       anykernel3_commit: ${{ needs.resolve-sources.outputs.anykernel3_commit }}
       droidspaces_commit: ${{ needs.resolve-sources.outputs.droidspaces_commit }}
       brand_name: ${{ inputs.brand_name }}
+      build_timestamp: ${{ inputs.build_timestamp }}
       os_patch_level: ${{ inputs.os_patch_level }}
       bypass: ${{ inputs.bypass }}
     secrets: inherit
@@ -688,6 +690,7 @@ jobs:
       anykernel3_commit: ${{ needs.resolve-sources.outputs.anykernel3_commit }}
       droidspaces_commit: ${{ needs.resolve-sources.outputs.droidspaces_commit }}
       brand_name: ${{ inputs.brand_name }}
+      build_timestamp: ${{ inputs.build_timestamp }}
       os_patch_level: ${{ inputs.os_patch_level }}
       bypass: ${{ inputs.bypass }}
     secrets: inherit
@@ -717,6 +720,7 @@ jobs:
       anykernel3_commit: ${{ needs.resolve-sources.outputs.anykernel3_commit }}
       droidspaces_commit: ${{ needs.resolve-sources.outputs.droidspaces_commit }}
       brand_name: ${{ inputs.brand_name }}
+      build_timestamp: ${{ inputs.build_timestamp }}
       os_patch_level: ${{ inputs.os_patch_level }}
       bypass: ${{ inputs.bypass }}
     secrets: inherit
@@ -746,6 +750,7 @@ jobs:
       anykernel3_commit: ${{ needs.resolve-sources.outputs.anykernel3_commit }}
       droidspaces_commit: ${{ needs.resolve-sources.outputs.droidspaces_commit }}
       brand_name: ${{ inputs.brand_name }}
+      build_timestamp: ${{ inputs.build_timestamp }}
       os_patch_level: ${{ inputs.os_patch_level }}
       bypass: ${{ inputs.bypass }}
     secrets: inherit
@@ -775,6 +780,7 @@ jobs:
       anykernel3_commit: ${{ needs.resolve-sources.outputs.anykernel3_commit }}
       droidspaces_commit: ${{ needs.resolve-sources.outputs.droidspaces_commit }}
       brand_name: ${{ inputs.brand_name }}
+      build_timestamp: ${{ inputs.build_timestamp }}
       os_patch_level: ${{ inputs.os_patch_level }}
       bypass: ${{ inputs.bypass }}
     secrets: inherit
@@ -804,6 +810,7 @@ jobs:
       anykernel3_commit: ${{ needs.resolve-sources.outputs.anykernel3_commit }}
       droidspaces_commit: ${{ needs.resolve-sources.outputs.droidspaces_commit }}
       brand_name: ${{ inputs.brand_name }}
+      build_timestamp: ${{ inputs.build_timestamp }}
       os_patch_level: ${{ inputs.os_patch_level }}
       bypass: ${{ inputs.bypass }}
     secrets: inherit
@@ -1618,4 +1625,3 @@ jobs:
           path: release_body.md
           retention-days: 7
           if-no-files-found: warn
-

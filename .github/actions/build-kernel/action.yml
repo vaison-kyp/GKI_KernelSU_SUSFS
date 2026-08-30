@@ -39,11 +39,6 @@ runs:
         if [ "${{ inputs.bypass }}" = "false" ]; then
           sed -i '/name = "kernel_aarch64",/a\    check_defconfig = "disabled",' common/BUILD.bazel
         fi
-        # Match Pixel 11 stock kernel build timestamp.
-        sed -i 's|export KBUILD_BUILD_TIMESTAMP=.*|export KBUILD_BUILD_TIMESTAMP="Fri Jul 10 21:44:24 UTC 2026"|' build/_setup_env.sh
-
-        echo "Patched kernel build timestamp:"
-        grep 'KBUILD_BUILD_TIMESTAMP=' build/_setup_env.sh
 
         if [ -n "${KBUILD_BUILD_TIMESTAMP:-}" ] &&
            [ -f "build/_setup_env.sh" ]; then
@@ -63,6 +58,9 @@ runs:
           --config=stamp \
           --disk_cache=/home/runner/.cache/bazel \
           //common:kernel_aarch64/Image
+
+        echo "Embedded kernel version:"
+        strings bazel-bin/common/kernel_aarch64/Image | grep -m1 '^Linux version ' || true
       fi
 
   - name: 'Gather Build Artifacts'
@@ -99,4 +97,3 @@ runs:
       set -euo pipefail
       cp ${{ github.action_path }}/patches/bypass.patch "${{ github.workspace }}/AnyKernel3/bypass.patch"
       patch -p1 < bypass.patch
-
