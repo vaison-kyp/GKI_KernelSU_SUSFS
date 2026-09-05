@@ -605,6 +605,35 @@ jobs:
           if-no-files-found: error
           compression-level: 0
 
+  record-build-settings:
+    name: Record selected build settings
+    needs:
+      - resolve-sources
+    if: ${{ always() && github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create build-settings.json
+        shell: bash
+        env:
+          WORKFLOW_INPUTS_JSON: ${{ toJSON(inputs) }}
+          RESOLVED_OUTPUTS_JSON: ${{ toJSON(needs.resolve-sources.outputs) }}
+        run: |
+          set -euo pipefail
+          settings_dir=${RUNNER_TEMP}/build-settings
+          settings_file=${settings_dir}/build-settings.json
+          mkdir -p ${settings_dir}
+          jq -n '{schema_version:1,generated_at_utc:(now|todateiso8601),run:{repository:env.GITHUB_REPOSITORY,workflow:env.GITHUB_WORKFLOW,id:(env.GITHUB_RUN_ID|tonumber),attempt:(env.GITHUB_RUN_ATTEMPT|tonumber),ref:env.GITHUB_REF,commit_sha:env.GITHUB_SHA,actor:env.GITHUB_ACTOR},selected_inputs:(env.WORKFLOW_INPUTS_JSON|fromjson),resolved_sources:(env.RESOLVED_OUTPUTS_JSON|fromjson)}' > ${settings_file}
+          jq empty ${settings_file}
+          echo Recorded build settings in ${settings_file}
+
+      - name: Upload build settings
+        uses: actions/upload-artifact@v7
+        with:
+          name: Build-Settings-${{ github.run_id }}
+          path: ${{ runner.temp }}/build-settings/build-settings.json
+          if-no-files-found: error
+          compression-level: 9
+
   build-android12-5-10:
     needs:
     - prepare-ccache
